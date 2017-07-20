@@ -11,4 +11,8 @@ before_install:
   - sudo apt-get -y install docker-ce
 
 script:
-  - make build push
+  - make build
+
+after_success:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - make push

@@ -8,7 +8,7 @@ ARG base=http://mirror.rackspace.com/archlinux/iso/${version}/
 
 # Extract the bootstrap to /
 ADD ${base}archlinux-bootstrap-${version}-${arch}.tar.gz /arch.tar.gz
-RUN tar xf /arch.tar.gz && rm /root.x86_64/README
+RUN ls -l / && tar xf /arch.tar.gz && rm /root.x86_64/README
 
 # Default to rackspace global mirror
 RUN echo 'Server = http://mirror.rackspace.com/archlinux/$repo/os/$arch' >> /root.x86_64/etc/pacman.d/mirrorlist
