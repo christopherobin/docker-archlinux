@@ -1,8 +1,9 @@
-DATE=$(shell date +%Y.%m)
-VERSION=$(shell date +%Y.%m.01)
+DATE ?= $(shell date +%Y.%m)
+VERSION ?= $(shell date +%Y.%m.01)
+BUILD_ARGS ?= 
 
 build:
-	docker build --build-arg=version=$(VERSION) -t crobin/archlinux:latest .
+	docker build --build-arg version=$(VERSION) $(BUILD_ARGS) -t crobin/archlinux:latest .
 	docker tag crobin/archlinux:latest crobin/archlinux:$(DATE)
 .PHONY: build
 

@@ -21,10 +21,13 @@ ARG pkglist="archlinux-keyring bash coreutils filesystem pacman pacman-mirrorlis
 
 COPY --from=alpine /root.x86_64 /
 RUN rm README
-RUN pacman-key --init && pacman-key --populate archlinux
+RUN pacman-key --init && pacman-key --populate archlinux && pacman -Sy --noconfirm --noprogressbar binutils
 RUN mkdir /strap/var/lib/pacman -p \
-    && mkdir /tmp/cache \
-    && pacman -Sy --dbpath /strap/var/lib/pacman -r /strap/ --cachedir /tmp/cache/ --noconfirm --noprogressbar ${pkglist} \
+    && mkdir {/tmp/cache,/strap/dev} \
+    && mknod /strap/dev/null c 1 3 \ # Install GnuPG requires /dev/null to be available in the bootstrapped env
+    && pacman -Sy -r /strap/ --cachedir /tmp/cache/ --noconfirm --noprogressbar ${pkglist} \
+    && strip /strap/usr/lib/*.so.* \ # Some of the GCC libs are not stripped
+    && rm -Rf /strap/usr/share/{man,doc}/* \ # Saves us an extra 30/40MB of space by removing those
     && echo 'Server = http://mirror.rackspace.com/archlinux/$repo/os/$arch' >> /strap/etc/pacman.d/mirrorlist
 
 # Final image, just copy what was installed in strap, then init the keyring
